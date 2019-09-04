@@ -23,11 +23,12 @@ public class BankTest {
         AtomicLong alenaCorrection = new AtomicLong(0);
         AtomicLong annaCorrection = new AtomicLong(0);
 
-        Account viktorAccount = new Account(250000,"0123456789");
-        Account vasyaAccount = new Account(250000,"1234567890");
-        Account mishaAccount = new Account(250000,"2345678901");
-        Account alenaAccount = new Account(250000,"3456789012");
-        Account annaAccount = new Account(250000,"4567890123");
+        Long money = (long)250000;
+        Account viktorAccount = new Account(money,"0123456789");
+        Account vasyaAccount = new Account(money,"1234567890");
+        Account mishaAccount = new Account(money,"2345678901");
+        Account alenaAccount = new Account(money,"3456789012");
+        Account annaAccount = new Account(money,"4567890123");
 
         bank.addAccount(viktorAccount);
         bank.addAccount(vasyaAccount);
@@ -42,8 +43,8 @@ public class BankTest {
                 try {
                     bank.transfer(viktorAccount.getAccNumber(), vasyaAccount.getAccNumber(), amount);
                 } catch (Exception e) {
-                    viktorCorrection.getAndAdd(amount*(-1));
-                    vasyaCorrection.set(vasyaCorrection.get() + amount);
+                    viktorCorrection.getAndAdd(-amount);
+                    vasyaCorrection.getAndAdd(amount);
                     e.printStackTrace();
                 }
             }
@@ -57,8 +58,8 @@ public class BankTest {
                 try {
                     bank.transfer(viktorAccount.getAccNumber(), alenaAccount.getAccNumber(), amount);
                 } catch (Exception e) {
-                    viktorCorrection.getAndAdd(amount*(-1));
-                    alenaCorrection.set(alenaCorrection.get() + amount);
+                    viktorCorrection.getAndAdd(-amount);
+                    alenaCorrection.getAndAdd(amount);
                     e.printStackTrace();
                 }
             }
@@ -72,8 +73,8 @@ public class BankTest {
                 try {
                     bank.transfer(vasyaAccount.getAccNumber(), mishaAccount.getAccNumber(), amount);
                 } catch (Exception e) {
-                    vasyaCorrection.set(vasyaCorrection.get() - amount);
-                    mishaCorrection.set(mishaCorrection.get() + amount);
+                    vasyaCorrection.getAndAdd(-amount);
+                    mishaCorrection.getAndAdd(amount);
                     e.printStackTrace();
                 }
             }
@@ -87,8 +88,8 @@ public class BankTest {
                 try {
                     bank.transfer(mishaAccount.getAccNumber(), annaAccount.getAccNumber(), amount);
                 } catch (Exception e) {
-                    mishaCorrection.set(mishaCorrection.get() - amount);
-                    annaCorrection.set(annaCorrection.get() + amount);
+                    mishaCorrection.getAndAdd(-amount);
+                    annaCorrection.getAndAdd(amount);
                     e.printStackTrace();
                 }
             }
@@ -102,7 +103,7 @@ public class BankTest {
                 try {
                     bank.transfer(annaAccount.getAccNumber(), viktorAccount.getAccNumber(), 5500);
                 } catch (Exception e) {
-                    annaCorrection.set(annaCorrection.get() - amount);
+                    annaCorrection.getAndAdd(-amount);
                     viktorCorrection.getAndAdd(amount);
                     e.printStackTrace();
                 }
@@ -117,8 +118,8 @@ public class BankTest {
                 try {
                     bank.transfer(viktorAccount.getAccNumber(), vasyaAccount.getAccNumber(), 200);
                 } catch (Exception e) {
-                    viktorCorrection.getAndAdd(amount*(-1));
-                    vasyaCorrection.set(vasyaCorrection.get() + amount);
+                    viktorCorrection.getAndAdd(-amount);
+                    vasyaCorrection.getAndAdd(amount);
                     e.printStackTrace();
                 }
             }
