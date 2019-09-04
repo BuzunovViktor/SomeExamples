@@ -11,9 +11,8 @@ public class Bank {
 
     public synchronized boolean isFraud(String fromAccountNum, String toAccountNum, long amount)
             throws InterruptedException {
-        //Thread.sleep(1000);
-//        return random.nextBoolean();
-        return false;
+        Thread.sleep(1000);
+        return random.nextBoolean();
     }
 
     /**
@@ -33,73 +32,23 @@ public class Bank {
             throw new Exception("Invalid amount " + amount);
         }
         if (accountFrom.isBlocked()) {
-            throw new Exception("Main.Account is blocked " + accountFrom);
+            throw new Exception("Account is blocked " + accountFrom);
         }
         if (accountTo.isBlocked()) {
-            throw new Exception("Main.Account is blocked " + accountTo);
+            throw new Exception("Account is blocked " + accountTo);
         }
-        boolean isWait = false;
-
         int compareresult = accountFrom.compareTo(accountTo);
         if (compareresult > 0) {
             synchronized (accountTo) {
                 synchronized (accountFrom) {
-                    while ((getBalance(fromAccountNum) - amount) < 0) {
-                        System.out.println("wait");
-                        try {
-                            wait();
-                            isWait = true;
-                        } catch (InterruptedException ex) {
-                            ex.printStackTrace();
-                        }
-                        //throw new Exception("Isn't money enought. Main.Account " + fromAccountNum);
-                    }
-                    accountTo.debit(amount);
-                    accountFrom.credit(amount);
-                    if (isWait) {
-                        notify();
-                        isWait = false;
-                    }
-                    if (amount > 50000) {
-                        try {
-                            boolean result = isFraud(fromAccountNum, toAccountNum, amount);
-                            accountFrom.setBlocked(result);
-                            accountTo.setBlocked(result);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    doTransfer(accountTo, accountFrom, amount);
                 }
             }
         }
         if (compareresult < 0) {
             synchronized (accountFrom) {
                 synchronized (accountTo) {
-                    while ((getBalance(fromAccountNum) - amount) < 0) {
-                        System.out.println("wait");
-                        try {
-                            wait();
-                            isWait = true;
-                        } catch (InterruptedException ex) {
-                            ex.printStackTrace();
-                        }
-                        //throw new Exception("Isn't money enought. Main.Account " + fromAccountNum);
-                    }
-                    accountTo.debit(amount);
-                    accountFrom.credit(amount);
-                    if (isWait) {
-                        notify();
-                        isWait = false;
-                    }
-                    if (amount > 50000) {
-                        try {
-                            boolean result = isFraud(fromAccountNum, toAccountNum, amount);
-                            accountFrom.setBlocked(result);
-                            accountTo.setBlocked(result);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    doTransfer(accountTo,accountFrom,amount);
                 }
             }
         }
@@ -108,33 +57,30 @@ public class Bank {
             synchronized (o) {
                 synchronized (accountFrom) {
                     synchronized (accountTo) {
-                        while ((getBalance(fromAccountNum) - amount) < 0) {
-                            System.out.println("wait");
-                            try {
-                                wait();
-                                isWait = true;
-                            } catch (InterruptedException ex) {
-                                ex.printStackTrace();
-                            }
-                            //throw new Exception("Isn't money enought. Main.Account " + fromAccountNum);
-                        }
-                        accountTo.debit(amount);
-                        accountFrom.credit(amount);
-                        if (isWait) {
-                            notify();
-                            isWait = false;
-                        }
-                        if (amount > 50000) {
-                            try {
-                                boolean result = isFraud(fromAccountNum, toAccountNum, amount);
-                                accountFrom.setBlocked(result);
-                                accountTo.setBlocked(result);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
+                        doTransfer(accountTo,accountFrom,amount);
                     }
                 }
+            }
+        }
+    }
+
+    private void doTransfer(Account accountTo, Account accountFrom, Long amount) {
+        try {
+            if (getBalance(accountFrom.getAccNumber()) - amount < 0) {
+                throw new Exception("Isn't money enough " + accountFrom);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        accountTo.debit(amount);
+        accountFrom.credit(amount);
+        if (amount > 50000) {
+            try {
+                boolean result = isFraud(accountTo.getAccNumber(), accountFrom.getAccNumber(), amount);
+                accountFrom.setBlocked(result);
+                accountTo.setBlocked(result);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
