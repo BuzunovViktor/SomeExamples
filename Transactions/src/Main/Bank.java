@@ -64,13 +64,9 @@ public class Bank {
         }
     }
 
-    private void doTransfer(Account accountTo, Account accountFrom, Long amount) {
-        try {
-            if (getBalance(accountFrom.getAccNumber()) - amount < 0) {
-                throw new Exception("Isn't money enough " + accountFrom);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+    private synchronized void doTransfer(Account accountTo, Account accountFrom, Long amount) throws Exception {
+        if (getBalance(accountFrom.getAccNumber()) - amount < 0) {
+            throw new Exception("Isn't money enough " + accountFrom);
         }
         accountTo.debit(amount);
         accountFrom.credit(amount);
@@ -88,12 +84,12 @@ public class Bank {
     /**
      * TODO: реализовать метод. Возвращает остаток на счёте.
      */
-    public long getBalance(String accountNum) throws Exception {
-            Account account = accounts.get(accountNum);
-            if (account == null) {
-                throw new Exception("Invalid account\n" + account);
-            }
-            return account.getMoney();
+    public synchronized long getBalance(String accountNum) throws Exception {
+        Account account = accounts.get(accountNum);
+        if (account == null) {
+            throw new Exception("Invalid account\n" + account);
+        }
+        return account.getMoney();
     }
 
     public void addAccount(Account account) {
