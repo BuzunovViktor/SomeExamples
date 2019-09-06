@@ -1,14 +1,24 @@
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Level {
 
+    private URI uri;
     private Byte levelNumber;
-    private String url;
-    private ArrayList<Level> subLevels = null;
+    private List<Level> subLevels = null;
 
-    public Level(Byte levelNumber, String url) {
+    public Level(Byte levelNumber, URI uri) {
         this.levelNumber = levelNumber;
-        this.url = url;
+        this.uri = uri;
+    }
+
+    public URI getUri() {
+        return uri;
+    }
+
+    public void setUri(URI uri) {
+        this.uri = uri;
     }
 
     public Byte getLevelNumber() {
@@ -19,20 +29,28 @@ public class Level {
         this.levelNumber = levelNumber;
     }
 
-    public String getUrl() {
-        return url;
+    public void addSubLevel(Level subLevel) {
+        if (subLevels == null) {
+            subLevels = new ArrayList<>();
+        }
+        subLevels.add(subLevel);
     }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public ArrayList<Level> getSubLevels() {
+    public List<Level> getSubLevels() {
         return subLevels;
     }
 
-    public void setSubLevels(ArrayList<Level> subLevels) {
+    public void setSubLevels(List<Level> subLevels) {
         this.subLevels = subLevels;
+    }
+
+    @Override
+    public String toString() {
+        return "Level{" +
+                "uri=" + uri +
+                ", levelNumber=" + levelNumber +
+                ", subLevels=" + subLevels +
+                '}';
     }
 
 }
